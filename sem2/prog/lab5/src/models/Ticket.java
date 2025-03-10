@@ -4,7 +4,6 @@ import utils.Element;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Ticket extends Element implements Serializable{
@@ -61,15 +60,47 @@ public class Ticket extends Element implements Serializable{
         if (coordinates == null || !coordinates.validate()) return false;
         return true;
     }
+    
+    @Override
+    public int compareTo(Element element) {
+        return Long.compare(this.id, element.getId());
+    }
 
     @Override
     public long getId() {
         return id;
     }
-    
-    @Override
-    public int compareTo(Element element) {
-        return Long.compare(this.id, element.getId()); // ✅ Correct
+
+    public String getName(){
+        return this.name;
+    }
+
+    public Coordinates getCoordinates(){
+        return this.coordinates;
+    }
+
+    public java.time.LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public Double getDiscount() {
+        return discount;
+    }
+
+    public Boolean getRefundable() {
+        return refundable;
+    }
+
+    public TicketType getType() {
+        return type;
+    }
+
+    public Venue getVenue() {
+        return venue;
     }
 }
 

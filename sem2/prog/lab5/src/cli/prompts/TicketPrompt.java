@@ -33,9 +33,9 @@ public class TicketPrompt extends AbstractPrompt<Ticket>{
             terminal.println(price);
             double discount = promptFor("Введите скидку", Double::parseDouble, "Ошибка: введите корректную скидку");
             terminal.println(discount);
-            boolean refundable = promptFor("Можно вернуть?", Boolean::parseBoolean, "Ошибка: введите корректную цену");
+            boolean refundable = promptFor("Можно вернуть?(true,false)", Boolean::parseBoolean, "Ошибка: введите корректную цену");
             terminal.println(refundable);
-            TicketType type = promptFor("Тип билета", TicketType::valueOf, "Ошибка: введите корректный тип Ticket.");
+            TicketType type = promptFor("Тип билета(VIP, USUAL, BUDGETARY)", TicketType::valueOf, "Ошибка: введите корректный тип Ticket.");
             terminal.println(type);
             Venue venue = this.vp.ask();
             terminal.println(venue);

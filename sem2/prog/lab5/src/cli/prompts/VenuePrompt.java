@@ -20,7 +20,7 @@ public class VenuePrompt extends AbstractPrompt<Venue> {
                 return input;
             }, "Ошибка: имя не может быть пустым.");
             int capacity = promptFor("venue.capacity", Integer::parseInt, "Ошибка: введите целое число больше 0.");
-            VenueType type = promptFor("venue.type", VenueType::valueOf, "Ошибка: введите корректный тип Venue.");
+            VenueType type = promptFor("venue.type(BAR, THEATRE, MALL)", VenueType::valueOf, "Ошибка: введите корректный тип Venue.");
 
             return new Venue(id, name, capacity, type);
         } catch (Exception e) {
