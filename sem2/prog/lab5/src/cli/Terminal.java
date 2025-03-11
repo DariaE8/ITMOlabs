@@ -49,7 +49,6 @@ public class Terminal implements Console {
     public void printKV(Object key, Object value) {
         System.out.printf(" %-35s%-1s%n", key, value);
     }
-
     /**
      * Выводит prompt текущей консоли
      */

@@ -1,18 +1,30 @@
 package models;
 
 import java.util.TreeMap;
+import java.util.Map;
 import java.util.Collection;
-import java.util.SortedMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TicketManager {
     TreeMap<Integer, Ticket> storage = new TreeMap<>();
 
+    // public TicketManager() {
+    //     insert(1, new Ticket());
+    //     insert(2, new Ticket());
+    //     insert(3, new Ticket());
+    //     insert(4, new Ticket());
+    //     insert(5, new Ticket());
+    // }
     public TicketManager() {
-        insert(1, new Ticket());
-        insert(2, new Ticket());
-        insert(3, new Ticket());
-        insert(4, new Ticket());
-        insert(5, new Ticket());
+
+    }
+
+    public TicketManager(List<String> dump) {
+        for (int i = 1; i < dump.size(); i++) {
+            String line = dump.get(i);
+            insert(i, Ticket.fromCSV(line));
+        }
     }
 
     public void insert(int id, Ticket ticket) {
@@ -31,8 +43,16 @@ public class TicketManager {
         storage.clear();
     }
 
-    public void dump() {
-        //dumps to csv file
+    public List<String> dumpCSV() {
+        List<String> storage_dump = new ArrayList<>();
+        
+        storage_dump.add(Ticket.getFieldNamesAsCsv());
+        for (Map.Entry<Integer, Ticket> entry : storage.entrySet()) {
+            Ticket ticket = entry.getValue();
+            
+            storage_dump.add(ticket.toCSV());
+        }
+        return storage_dump;
     }
 
     public Collection<Ticket> getValues() {

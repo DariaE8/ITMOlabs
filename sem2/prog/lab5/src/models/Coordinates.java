@@ -1,14 +1,20 @@
 package models;
 
 import utils.Validatable;
+import utils.ConvertibleToCSV;
 
-public class Coordinates implements Validatable {
+public class Coordinates implements Validatable, ConvertibleToCSV {
     private float x;
     private long y;
 
     public Coordinates(float x, long y) {
         this.x = x;
         this.y = y;
+    }
+
+    @Override
+    public String toCSV() {
+        return x + "," + y;
     }
 
     @Override
