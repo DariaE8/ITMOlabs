@@ -14,7 +14,9 @@ public abstract class AbstractPrompt<T> {
 
     protected <R> R promptFor(String prompt, Function<String, R> parser, String errorMessage) throws Exception {
         while (true) {
-            terminal.print(prompt + ": ");
+            if (terminal.checkScanner()) {
+                terminal.print(prompt + ": ");
+            }
             String line = terminal.readln().trim();
             if (line.equalsIgnoreCase("exit")) throw new Exception("User exited input");
             if (!line.isEmpty()) {

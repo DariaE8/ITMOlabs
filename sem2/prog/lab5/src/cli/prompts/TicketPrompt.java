@@ -26,22 +26,22 @@ public class TicketPrompt extends AbstractPrompt<Ticket>{
     public Ticket ask() throws Exception {
         try{
             String name = promptFor("Введите имя", Function.identity(), "Ошибка: введите корректное имя");
-            terminal.println(name);
+            // terminal.println(name);
             Coordinates coordinates = this.cp.ask();
-            terminal.println(coordinates);
+            // terminal.println(coordinates);
             int price = promptFor("Введите цену", Integer::parseInt, "Ошибка: введите корректную цену");
-            terminal.println(price);
+            // terminal.println(price);
             double discount = promptFor("Введите скидку", Double::parseDouble, "Ошибка: введите корректную скидку");
-            terminal.println(discount);
+            // terminal.println(discount);
             boolean refundable = promptFor("Можно вернуть?(true,false)", Boolean::parseBoolean, "Ошибка: введите корректную цену");
-            terminal.println(refundable);
+            // terminal.println(refundable);
             TicketType type = promptFor("Тип билета(VIP, USUAL, BUDGETARY)", TicketType::valueOf, "Ошибка: введите корректный тип Ticket.");
-            terminal.println(type);
+            // terminal.println(type);
             Venue venue = this.vp.ask();
-            terminal.println(venue);
+            // terminal.println(venue);
         
             Ticket ticket = new Ticket(name, coordinates, price, discount, refundable, type, venue);
-            terminal.println(ticket);
+            // terminal.println(ticket);
             return ticket;
         } catch (Exception e) {
             terminal.printError("Ошибка ввода: " + e.getMessage());

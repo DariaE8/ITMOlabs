@@ -9,22 +9,27 @@ import java.util.List;
 public class TicketManager {
     TreeMap<Integer, Ticket> storage = new TreeMap<>();
 
-    // public TicketManager() {
-    //     insert(1, new Ticket());
-    //     insert(2, new Ticket());
-    //     insert(3, new Ticket());
-    //     insert(4, new Ticket());
-    //     insert(5, new Ticket());
-    // }
     public TicketManager() {
-
+        insert(1, new Ticket());
+        insert(2, new Ticket());
+        insert(3, new Ticket());
+        insert(4, new Ticket());
+        insert(5, new Ticket());
     }
-
+    // public TicketManager() {}
     public TicketManager(List<String> dump) {
         for (int i = 1; i < dump.size(); i++) {
             String line = dump.get(i);
             insert(i, Ticket.fromCSV(line));
         }
+    }
+
+    public Integer getSize() {
+        return storage.size();
+    }
+
+    public Class<?> getType() {
+        return storage.getClass();
     }
 
     public void insert(int id, Ticket ticket) {

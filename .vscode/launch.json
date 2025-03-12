@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "request": "launch",
+            "name": "Run Main",
+            "mainClass": "Main",
+            "args": "db.csv"
+        }
+    ]
+}
