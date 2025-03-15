@@ -97,5 +97,5 @@ public class TicketManager {
         return storage.values().stream().filter(ticket -> ticket.getName().startsWith(substring)).toList();
     }
 
-    
+        
 }

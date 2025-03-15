@@ -42,6 +42,23 @@ public class Ticket extends Element implements Serializable, ConvertibleToCSV{
         this("John", new Coordinates(0, 0), 100, 10.0, true, TicketType.VIP, new Venue(1, "Venue", 100, VenueType.BAR));
     }
 
+    public static Ticket fromArgs(String[] args) {
+        if (args == null || args.length < 8) {
+            throw new IllegalArgumentException("Insufficient arguments to create Ticket.");
+        }
+
+        // Parse the arguments
+        String name = args[0];
+        Coordinates coordinates = new Coordinates(Float.parseFloat(args[1]), Long.parseLong(args[2]));  // Assuming coordinates are in args[1] and args[2]
+        Integer price = args[3].equals("null") ? null : Integer.parseInt(args[3]);
+        Double discount = Double.parseDouble(args[4]);
+        Boolean refundable = args[5].equals("null") ? null : Boolean.parseBoolean(args[5]);
+        TicketType type = TicketType.valueOf(args[6]);
+        Venue venue = new Venue(Long.parseLong(args[7]), args[8], Integer.parseInt(args[9]), VenueType.valueOf(args[10]));
+
+        return new Ticket(name, coordinates, price, discount, refundable, type, venue);
+    }
+    
     public String toCSV() {
         return id + "," + name + "," + coordinates.toCSV() + "," + creationDate + "," + (price == null ? "null" : price) + "," + (discount > 100 ? "100 (max limit exceeded)" : discount) + "," + (refundable == null ? "null" : "\"" + refundable + "\"") + "," + type + "," + venue.toCSV();
     }
@@ -119,6 +136,7 @@ public class Ticket extends Element implements Serializable, ConvertibleToCSV{
         return Long.compare(this.id, element.getId());
     }
 
+    
     @Override
     public long getId() {
         return id;
