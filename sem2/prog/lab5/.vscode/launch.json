@@ -6,7 +6,7 @@
             "request": "launch",
             "name": "Run Main",
             "mainClass": "Main",
-            "args": "sem2/prog/lab5/src/db.csv"
+            "args": "src/db.csv"
         }
     ]
 }

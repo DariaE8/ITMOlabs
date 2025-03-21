@@ -1,0 +1,2 @@
+id,name,coordinates.x,coordinates.y,creationDate,price,discount,refundable,type,venue.id,venue.name,venue.capacity,venue.type
+1,notops,1.0,1,2025-03-21,100,20.0,"true",VIP,89,notops-bar,100,BAR
