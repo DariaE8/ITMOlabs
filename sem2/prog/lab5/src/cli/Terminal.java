@@ -40,6 +40,22 @@ public class Terminal implements Console {
         System.err.println("Error: " + obj);
     }
 
+    /**
+     * Выводит сообщение об успешном выполнении операции
+     * @param message Сообщение для печати
+     */
+    public void printSuccess(String message) {
+        System.out.println("Success: " + message);
+    }
+
+    /**
+     * Выводит предупреждающее сообщение
+     * @param message Сообщение для печати
+     */
+    public void printWarning(String message) {
+        System.out.println("Warning: " + message);
+    }
+
     public String readln() throws NoSuchElementException, IllegalStateException {
         return (fileScanner!=null?fileScanner:defScanner).nextLine();
     }
@@ -134,4 +150,4 @@ public class Terminal implements Console {
         }
         return false;
     }
-} 
+}

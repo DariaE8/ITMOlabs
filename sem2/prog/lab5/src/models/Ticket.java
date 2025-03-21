@@ -44,7 +44,7 @@ public class Ticket extends Element implements Serializable, ConvertibleToCSV{
 
     public static Ticket fromArgs(String[] args) {
         if (args == null || args.length < 8) {
-            throw new IllegalArgumentException("Insufficient arguments to create Ticket.");
+            throw new IllegalArgumentException("Недостаточно аргументов для создания билета.");
         }
 
         // Parse the arguments

@@ -2,7 +2,6 @@ package cli.commands;
 
 import models.Command;
 import cli.CLI;
-import cli.Terminal;
 
 import java.io.File;
 import java.util.HashSet;
@@ -15,7 +14,7 @@ public class ExecuteScriptFileName extends Command {
     private int currentRecursionDepth = 0;
     private final CLI cli; // Ссылка на CLI для обработки команд
 
-    public ExecuteScriptFileName(CLI cli, Terminal terminal) {
+    public ExecuteScriptFileName(CLI cli) {
         super("execute_script", "выполнить команды из файла");
         this.cli = cli;
     }

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TicketManager {
     TreeMap<Integer, Ticket> storage = new TreeMap<>();
@@ -16,7 +17,7 @@ public class TicketManager {
         insert(4, new Ticket());
         insert(5, new Ticket());
     }
-    // public TicketManager() {}
+    
     public TicketManager(List<String> dump) {
         for (int i = 1; i < dump.size(); i++) {
             String line = dump.get(i);
@@ -74,14 +75,6 @@ public class TicketManager {
         storage.entrySet().removeIf(entry -> entry.getValue().compareTo(ticket) > 0);
     }
 
-    // public void removeGreaterKey(int key) {
-    //     //удалить из коллекции все элементы, ключ которых превышает заданный
-    //     SortedMap<Integer, Ticket> greater_elements = storage.tailMap(key);
-    //     for(Integer k : greater_elements.keySet()) {
-    //         remove(k);
-    //     }
-    // }
-
     public void removeGreaterKey(int key) {
         //удалить из коллекции все элементы, ключ которых превышает заданный
         storage.tailMap(key, false).clear();
@@ -98,4 +91,7 @@ public class TicketManager {
     }
 
         
+    public Set<Map.Entry<Integer, Ticket>> getEntrySet() {
+        return storage.entrySet();
+    }
 }
