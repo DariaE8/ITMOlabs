@@ -8,7 +8,8 @@ public class Exit extends Command {
         super("exit", "завершить программу (без сохранения в файл)");
     }
 
+    @Override
     public void run(String[] args) {
-        tm.clear();
-    }
+        System.exit(0);
+    }    
 }

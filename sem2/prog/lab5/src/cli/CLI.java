@@ -74,7 +74,7 @@ public class CLI {
 
     }
 
-    private void processCommand(String command, String arg) {
+    public void processCommand(String command, String arg) {
         switch (command) {
             case "help": printHelp(); break;
             case "info": printInfo(); break;
@@ -195,6 +195,11 @@ public class CLI {
     private void printAsc() {
         show();
     }
+
+    public Terminal getTerminal() {
+        return terminal;
+    }
+    
 
     private void executeScript(String filename) {
         if (currentRecursionDepth >= MAX_RECURSION_DEPTH) {

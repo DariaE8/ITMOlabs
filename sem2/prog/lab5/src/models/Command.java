@@ -1,4 +1,4 @@
-package cli.models;
+package models;
 
 import cli.Terminal;
 
@@ -9,11 +9,10 @@ public abstract class Command {
     protected TicketManager tm;
 
 
-    public Command(String name, String description, Terminal terminal, TicketManager tm) { 
+    public Command(String name, String description) { 
         this.name = name;
         this.description = description;
-        this.terminal = terminal;
-        this.tm = tm; 
+         
     }
 
     public abstract void run(String[] args);
