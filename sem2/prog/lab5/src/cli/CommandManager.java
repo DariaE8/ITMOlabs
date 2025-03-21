@@ -1,12 +1,10 @@
-package cli.prompts;
+package cli;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-import cli.CLI;
-import cli.prompts.CommandManager;
 import models.Command;
 import cli.commands.*;
 

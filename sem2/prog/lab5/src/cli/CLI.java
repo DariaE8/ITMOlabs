@@ -36,12 +36,13 @@ public class CLI {
         }
 
         if (!checkFileExist(args[0])) {
+            terminal.println(args);
             return false;
         }
     
         try {
-            // this.dm = new DumpManager(args[0]);
-            this.dm = new DumpManager();
+            this.dm = new DumpManager(args[0]);
+            // this.dm = new DumpManager();
             this.tm = new TicketManager(dm.load());
             return true;
         } catch (Exception e) {
