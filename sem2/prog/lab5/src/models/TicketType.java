@@ -1,15 +1,24 @@
 package models;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+/**
+ * Перечисление типов билетов.
+ * Определяет возможные категории билетов.
+ */
 public enum TicketType {
     VIP,
     USUAL,
     BUDGETARY;
 
+    /**
+     * Возвращает список всех возможных типов билетов через запятую.
+     * @return строка с перечислением типов
+     */
     public static String names() {
-            StringBuilder nameList = new StringBuilder();
-            for (var dragonType : values()) {
-                nameList.append(dragonType.name()).append(", ");
-            }
-            return nameList.substring(0, nameList.length()-2);
-        }
+        return Arrays.stream(values())
+                   .map(TicketType::name)
+                   .collect(Collectors.joining(", "));
+    }
 }

@@ -23,7 +23,7 @@ public class TicketPrompt extends AbstractPrompt<Ticket>{
     }
 
     @Override
-    public Ticket ask() throws Exception {
+    public Ticket ask() throws InputCancelledException {
         try{
             String name = promptFor("Введите имя", Function.identity(), "Ошибка: введите корректное имя");
             // terminal.println(name);
@@ -43,9 +43,15 @@ public class TicketPrompt extends AbstractPrompt<Ticket>{
             Ticket ticket = new Ticket(name, coordinates, price, discount, refundable, type, venue);
             // terminal.println(ticket);
             return ticket;
-        } catch (Exception e) {
-            terminal.printError("Ошибка ввода: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            terminal.printError("Некорректный формат числа. Пожалуйста, попробуйте снова.");
             return null;
+        } catch (IllegalArgumentException e) {
+            terminal.printError("Ошибка в данных: " + e.getMessage());
+            return null;
+        } catch (Exception e) {
+            terminal.printError("Произошла непредвиденная ошибка: " + e.getMessage());
+            return null; // Выход из метода при критической ошибке
         }
     }
     

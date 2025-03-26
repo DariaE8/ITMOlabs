@@ -1,72 +1,128 @@
 package cli;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-
-import models.Command;
+import java.util.*;
+import utils.Command;
+import models.TicketManager;
 import cli.commands.*;
 
-public class CommandManager{
-    private final Queue<String> commandHistory = new LinkedList<>();
-    private static final int HISTORY_SIZE = 5;
-    private final Map<String, Command> commands = new HashMap<>();
-    private final CLI cli;
+import utils.CommandException;
 
-    public CommandManager(CLI cli) {
-        this.cli = cli;
-        init();
+/**
+ * Менеджер команд для работы с CLI-приложением.
+ * Обеспечивает регистрацию, хранение и выполнение команд,
+ * а также ведение истории выполненных команд.
+ */
+public class CommandManager {
+    private final Queue<String> commandHistory = new LinkedList<>();
+    private static final int MAX_HISTORY_SIZE = 5;
+    private final Map<String, Command> commands = new HashMap<>();
+
+    /**
+     * Инициализирует менеджер команд, регистрируя все поддерживаемые команды.
+     * 
+     * @param ticketManager менеджер для работы с коллекцией билетов
+     * @param dumpManager менеджер для работы с сохранением данных
+     * @param terminal интерфейс для вывода результатов команд
+     * @throws IllegalArgumentException если любой из параметров равен null
+     */
+    public void init(TicketManager ticketManager, DumpManager dumpManager, Terminal terminal) {
+        Objects.requireNonNull(ticketManager, "Менеджер билетов не может быть null");
+        Objects.requireNonNull(dumpManager, "Менеджер сохранения не может быть null");
+        Objects.requireNonNull(terminal, "Терминал не может быть null");
+
+        registerCoreCommands(terminal, ticketManager);
+        registerTicketCommands(terminal, ticketManager);
+        registerUtilityCommands(dumpManager, ticketManager, terminal);
     }
 
+    /**
+     * Регистрирует новую команду.
+     * 
+     * @param name название команды
+     * @param command реализация команды
+     * @throws IllegalArgumentException если имя команды или реализация равны null
+     */
     public void addCommand(String name, Command command) {
+        Objects.requireNonNull(name, "Имя команды не может быть null");
+        Objects.requireNonNull(command, "Реализация команды не может быть null");
         this.commands.put(name, command);
     }
 
-    private void init () {
-        addCommand("help", new Help());
-        addCommand("info", new Info());
-        addCommand("show", new Show());
-        addCommand("сount_by_venue", new CountByVenue());
-        addCommand("insert", new InsertNull());
-        addCommand("update", new UpdateId());
-        addCommand("remove_greater", new RemoveGreater());
-        addCommand("remove_by_key", new RemoveGreaterKeyNull());
-        addCommand("clear", new Clear());
-        addCommand("history", new History(cli.getTerminal(), getHistory()));
-        addCommand("save", new Save());
-        addCommand("execute_script", new ExecuteScriptFileName(cli));
-        addCommand("exit", new Exit(cli, cli.getTerminal()));
-        addCommand("remove_greater", new RemoveGreaterKeyNull());
-        addCommand("filter_by_type", new FilterStartsWithNameName());
-        addCommand("print_unique_color", new PrintAscending());
-
+    /**
+     * Возвращает коллекцию всех зарегистрированных команд.
+     * 
+     * @return коллекция команд
+     */
+    public Collection<Command> getCommands() {
+        return Collections.unmodifiableCollection(commands.values());
     }
     
-
-    public void run(String command) {
-    Command cmd = commands.get(command);
-    if (cmd != null) {
-        cmd.run(new String[]{}); // Пустой массив, если команда не требует аргументов
-    } else {
-        System.out.println("Неизвестная команда: " + command);
+    /**
+     * Выполняет указанную команду с заданными аргументами.
+     * 
+     * @param commandName название команды для выполнения
+     * @param args аргументы команды
+     * @throws CommandException если команда не найдена или возникла ошибка при выполнении
+     */
+    public void executeCommand(String commandName, String[] args) throws CommandException {
+        Command command = commands.get(commandName);
+        if (command == null) {
+            throw new CommandException("Неизвестная команда: " + commandName);
+        }
+        
+        try {
+            addToHistory(command.getName());
+            command.execute(args);
+        } catch (Exception e) {
+            throw new CommandException("Ошибка при выполнении команды '" + commandName + "': " + e.getMessage(), e);
+        }
     }
-}
 
-    
+    /**
+     * Добавляет команду в историю выполненных команд.
+     * Если история достигла максимального размера, удаляет самую старую команду.
+     * 
+     * @param command название команды для добавления в историю
+     */
     private void addToHistory(String command) {
-        if (commandHistory.size() >= HISTORY_SIZE) {
-            commandHistory.poll(); // Удаляем самую старую команду
+        if (commandHistory.size() >= MAX_HISTORY_SIZE) {
+            commandHistory.poll();
         }
         commandHistory.offer(command);
     }
 
-
+    /**
+     * Возвращает историю выполненных команд.
+     * 
+     * @return очередь с историей команд (новые команды в конце)
+     */
     public Queue<String> getHistory() {
-        return commandHistory;
+        return new LinkedList<>(commandHistory);
     }
-    
-    
 
-    
+    private void registerCoreCommands(Terminal terminal, TicketManager ticketManager) {
+        addCommand("help", new Help(terminal, this));
+        addCommand("info", new Info(terminal, ticketManager));
+        addCommand("exit", new Exit());
+    }
+
+    private void registerTicketCommands(Terminal terminal, TicketManager ticketManager) {
+        addCommand("show", new Show(terminal, ticketManager));
+        addCommand("show_table", new ShowTable(terminal, ticketManager));
+        addCommand("insert", new Insert(terminal, ticketManager));
+        addCommand("update", new UpdateId(terminal, ticketManager));
+        addCommand("clear", new Clear(terminal, ticketManager));
+        addCommand("count_by_venue", new CountByVenue(terminal, ticketManager));
+        addCommand("filter_starts_with_name", new FilterStartsWithNameName(terminal, ticketManager));
+        addCommand("print_ascending", new PrintAscending(terminal, ticketManager));
+        addCommand("remove_greater", new RemoveGreater(terminal, ticketManager));
+        addCommand("remove_by_key", new RemoveGreaterKey(terminal, ticketManager));
+        addCommand("remove_greater_key", new RemoveGreaterKey(terminal, ticketManager));
+    }
+
+    private void registerUtilityCommands(DumpManager dumpManager, TicketManager ticketManager, Terminal terminal) {
+        addCommand("history", new History(terminal, getHistory()));
+        addCommand("save", new Save(dumpManager, ticketManager));
+        addCommand("execute_script", new ExecuteScriptFileName(terminal, this));
+    }
 }

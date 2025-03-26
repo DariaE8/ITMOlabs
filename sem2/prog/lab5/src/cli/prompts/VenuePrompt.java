@@ -12,7 +12,7 @@ public class VenuePrompt extends AbstractPrompt<Venue> {
     }
 
     @Override
-    public Venue ask() throws Exception {
+    public Venue ask() throws InputCancelledException{
         try {
             long id = promptFor("venue.id", Long::parseLong, "Ошибка: введите целое число.");
             String name = promptFor("venue.name", input -> {
@@ -23,9 +23,15 @@ public class VenuePrompt extends AbstractPrompt<Venue> {
             VenueType type = promptFor("venue.type(BAR, THEATRE, MALL)", VenueType::valueOf, "Ошибка: введите корректный тип Venue.");
 
             return new Venue(id, name, capacity, type);
-        } catch (Exception e) {
-            terminal.printError("Ошибка ввода: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            terminal.printError("Некорректный формат числа. Пожалуйста, попробуйте снова.");
             return null;
+        } catch (IllegalArgumentException e) {
+            terminal.printError("Ошибка в данных: " + e.getMessage());
+            return null;
+        } catch (Exception e) {
+            terminal.printError("Произошла непредвиденная ошибка: " + e.getMessage());
+            return null; // Выход из метода при критической ошибке
         }
     }
 }

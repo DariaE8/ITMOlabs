@@ -1,77 +1,195 @@
 package cli.commands;
 
-import models.Command;
-import cli.CLI;
-
+import cli.CommandManager;
+import cli.Terminal;
+import utils.Command;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 
+import utils.CommandException;
+/**
+ * Команда для выполнения скрипта из файла.
+ * Читает команды из указанного файла и выполняет их последовательно.
+ * Защищена от рекурсии и циклических вызовов.
+ */
 public class ExecuteScriptFileName extends Command {
     private static final int MAX_RECURSION_DEPTH = 10;
+    private static final long MAX_SCRIPT_SIZE_KB = 1024; // 1MB max script size
+    
     private final Set<String> executingScripts = new HashSet<>();
     private int currentRecursionDepth = 0;
-    private final CLI cli; // Ссылка на CLI для обработки команд
+    
+    private final Terminal terminal;
+    private final CommandManager commandManager;
 
-    public ExecuteScriptFileName(CLI cli) {
-        super("execute_script", "выполнить команды из файла");
-        this.cli = cli;
+    /**
+     * Конструктор команды выполнения скрипта.
+     *
+     * @param terminal терминал для ввода/вывода
+     * @param commandManager менеджер команд для выполнения
+     * @throws NullPointerException если terminal или commandManager равен null
+     */
+    public ExecuteScriptFileName(Terminal terminal, CommandManager commandManager) {
+        super("execute_script", "выполнить команды из указанного файла");
+        this.terminal = Objects.requireNonNull(terminal, "Терминал не может быть null");
+        this.commandManager = Objects.requireNonNull(commandManager, "Менеджер команд не может быть null");
     }
 
+    /**
+     * Выполняет команды из указанного файла.
+     *
+     * @param args аргументы команды (имя файла скрипта)
+     * @throws CommandException если произошла ошибка выполнения скрипта
+     */
     @Override
-    public void run(String[] args) {
-        if (args.length == 0) {
-            terminal.printError("Ошибка: необходимо указать имя файла.");
-            return;
+    public void execute(String[] args) throws CommandException {
+        if (args == null || args.length == 0) {
+            throw new CommandException("Не указано имя файла скрипта");
         }
 
-        String filename = args[0];
+        String filename = args[0].trim();
+        
+        try {
+            validateScriptFile(filename);
+            executeScript(filename);
+        } catch (ScriptExecutionException e) {
+            throw new CommandException(e.getMessage());
+        }
+    }
 
+    /**
+     * Проверяет возможность выполнения скрипта.
+     *
+     * @param filename имя файла скрипта
+     * @throws ScriptExecutionException если файл не может быть выполнен
+     */
+    private void validateScriptFile(String filename) throws ScriptExecutionException {
         if (currentRecursionDepth >= MAX_RECURSION_DEPTH) {
-            terminal.printError("Ошибка: превышена максимальная глубина рекурсии (" + MAX_RECURSION_DEPTH + ").");
-            return;
-        }
-
-        if (!checkFileExist(filename)) {
-            return;
+            throw new ScriptExecutionException(
+                "Превышена максимальная глубина рекурсии (" + MAX_RECURSION_DEPTH + ")");
         }
 
         if (executingScripts.contains(filename)) {
-            terminal.printError("Ошибка: обнаружена рекурсия! Скрипт " + filename + " уже выполняется.");
-            return;
+            throw new ScriptExecutionException(
+                "Обнаружена циклическая зависимость! Скрипт " + filename + " уже выполняется");
         }
 
-        executingScripts.add(filename);
-        currentRecursionDepth++;
+        File file = new File(filename);
+        validateFileProperties(file);
+    }
 
-        try (Scanner fileScanner = new Scanner(new File(filename))) {
-            terminal.selectFileScanner(fileScanner);
-
-            while (terminal.isCanReadln()) {
-                String command = terminal.readln().trim();
-                if (!command.isEmpty()) {
-                    String[] parts = command.split(" ", 2);
-                    String cmd = parts[0];
-                    String arg = parts.length > 1 ? parts[1] : "";
-                    cli.processCommand(cmd, arg); // Теперь команды выполняются через CLI
-                }
-            }
-            terminal.selectConsoleScanner();
-        } catch (Exception e) {
-            terminal.printError("Ошибка: не удалось открыть файл " + filename);
-        } finally {
-            executingScripts.remove(filename);
-            currentRecursionDepth--;
+    /**
+     * Проверяет свойства файла скрипта.
+     *
+     * @param file файл скрипта
+     * @throws ScriptExecutionException если файл не соответствует требованиям
+     */
+    private void validateFileProperties(File file) throws ScriptExecutionException {
+        if (!file.exists()) {
+            throw new ScriptExecutionException("Файл скрипта не найден");
+        }
+        
+        if (!file.isFile()) {
+            throw new ScriptExecutionException("Указанный путь не является файлом");
+        }
+        
+        if (!file.canRead()) {
+            throw new ScriptExecutionException("Нет прав на чтение файла");
+        }
+        
+        if (file.length() > MAX_SCRIPT_SIZE_KB * 1024) {
+            throw new ScriptExecutionException(
+                "Файл слишком большой (максимум " + MAX_SCRIPT_SIZE_KB + " KB)");
         }
     }
 
-    private boolean checkFileExist(String fname) {
-        File file = new File(fname);
-        if (!file.exists() || !file.isFile()) {
-            terminal.printError("Ошибка: файл " + fname + " не найден.");
-            return false;
+    /**
+     * Выполняет команды из файла скрипта.
+     *
+     * @param filename имя файла скрипта
+     * @throws ScriptExecutionException если произошла ошибка при выполнении
+     */
+    private void executeScript(String filename) throws ScriptExecutionException {
+        executingScripts.add(filename);
+        currentRecursionDepth++;
+        
+        try (Scanner fileScanner = new Scanner(new File(filename))) {
+            terminal.selectFileScanner(fileScanner);
+            
+            while (terminal.isCanReadln()) {
+                processScriptLine(terminal.readln());
+            }
+        } catch (FileNotFoundException e) {
+            throw new ScriptExecutionException("Файл скрипта не найден: " + filename);
+        } catch (Exception e) {
+            throw new ScriptExecutionException("Ошибка чтения файла: " + e.getMessage());
+        } finally {
+            cleanUpAfterExecution(filename);
         }
-        return true;
+    }
+
+    /**
+     * Обрабатывает строку скрипта.
+     *
+     * @param line строка из файла скрипта
+     */
+    private void processScriptLine(String line) {
+        String command = line.trim();
+        if (command.isEmpty() || command.startsWith("#")) {
+            return; // Пропускаем пустые строки и комментарии
+        }
+        
+        try {
+            String[] parts = command.split(" ", 2);
+            String cmd = parts[0];
+            String[] args = parts.length > 1 ? parts[1].split(" ") : new String[0];
+            
+            if ("execute_script".equalsIgnoreCase(cmd)) {
+                terminal.printWarning("Вложенные скрипты запрещены. Команда пропущена.");
+                return;
+            }
+            
+            commandManager.executeCommand(cmd, args);
+        } catch (Exception e) {
+            terminal.printError("Ошибка выполнения команды: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Очищает ресурсы после выполнения скрипта.
+     *
+     * @param filename имя выполненного файла скрипта
+     */
+    private void cleanUpAfterExecution(String filename) {
+        terminal.selectConsoleScanner();
+        executingScripts.remove(filename);
+        currentRecursionDepth--;
+    }
+
+    /**
+     * Возвращает подробное описание команды.
+     *
+     * @return строка с описанием команды
+     */
+    @Override
+    public String getDescription() {
+        return "Выполняет команды из указанного файла.\n"
+             + "Ограничения:\n"
+             + "- Максимальный размер файла: " + MAX_SCRIPT_SIZE_KB + " KB\n"
+             + "- Максимальная глубина рекурсии: " + MAX_RECURSION_DEPTH + "\n"
+             + "- Вложенные execute_script игнорируются";
+    }
+
+    /**
+     * Исключение при выполнении скрипта.
+     */
+    private static class ScriptExecutionException extends Exception {
+        public ScriptExecutionException(String message) {
+            super(message);
+        }
     }
 }

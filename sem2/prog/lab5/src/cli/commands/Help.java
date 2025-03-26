@@ -1,30 +1,40 @@
 package cli.commands;
-import models.Command;
 
+import utils.Command;
+import cli.CommandManager;
+import cli.Terminal;
+import java.util.Objects;
+
+/**
+ * Команда для вывода справки по доступным командам.
+ * Показывает список всех команд с их описаниями.
+ */
 public class Help extends Command {
-    public Help() {
+    private final CommandManager commandManager;
+    private final Terminal terminal;
+
+    /**
+     * Конструктор команды помощи.
+     *
+     * @param terminal терминал для вывода информации
+     * @param commandManager менеджер команд для получения списка команд
+     * @throws NullPointerException если terminal или commandManager равен null
+     */
+    public Help(Terminal terminal, CommandManager commandManager) {
         super("help", "вывести справку по доступным командам");
+        this.commandManager = Objects.requireNonNull(commandManager, "Менеджер команд не может быть null");
+        this.terminal = Objects.requireNonNull(terminal, "Терминал не может быть null");
     }
+
+    /**
+     * Выводит список всех доступных команд с их описаниями.
+     *
+     * @param args аргументы команды (игнорируются)
+     */
     @Override
-    public void run(String[] args){
-        System.out.println("""
-            help : вывести справку по доступным командам
-            info : вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.)
-            show : вывести в стандартный поток вывода все элементы коллекции в строковом представлении
-            insert null {element} : добавить новый элемент с заданным ключом
-            update id {element} : обновить значение элемента коллекции, id которого равен заданному
-            remove_key null : удалить элемент из коллекции по его ключу
-            clear : очистить коллекцию
-            save : сохранить коллекцию в файл
-            execute_script file_name : считать и исполнить скрипт из указанного файла. В скрипте содержатся команды в таком же виде, в котором их вводит пользователь в интерактивном режиме.
-            exit : завершить программу (без сохранения в файл)
-            remove_greater {element} : удалить из коллекции все элементы, превышающие заданный
-            history : вывести последние 5 команд (без их аргументов)
-            remove_greater_key null : удалить из коллекции все элементы, ключ которых превышает заданный
-            count_by_venue venue : вывести количество элементов, значение поля venue которых равно заданному
-            filter_starts_with_name name : вывести элементы, значение поля name которых начинается с заданной подстроки
-            print_ascending : вывести элементы коллекции в порядке возрастания
-        """);
+    public void execute(String[] args){
+        commandManager.getCommands().forEach(cmd -> 
+            terminal.println(cmd.getName() + " - " + cmd.getDescription())
+        );
     }
-    
 }

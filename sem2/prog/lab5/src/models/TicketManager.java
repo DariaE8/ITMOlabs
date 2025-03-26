@@ -1,97 +1,201 @@
 package models;
 
-import java.util.TreeMap;
-import java.util.Map;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
+/**
+ * Менеджер для работы с коллекцией билетов.
+ * Обеспечивает хранение, обработку и управление коллекцией билетов.
+ */
 public class TicketManager {
-    TreeMap<Integer, Ticket> storage = new TreeMap<>();
+    private final TreeMap<Integer, Ticket> tickets = new TreeMap<>();
 
+    /**
+     * Создает менеджер с тестовыми данными (5 билетов).
+     */
     public TicketManager() {
-        insert(1, new Ticket());
-        insert(2, new Ticket());
-        insert(3, new Ticket());
-        insert(4, new Ticket());
-        insert(5, new Ticket());
+        initializeTestData();
     }
-    
+
+    /**
+     * Создает менеджер из CSV данных.
+     *
+     * @param dump список строк в CSV формате
+     * @throws IllegalArgumentException если dump равен null
+     */
     public TicketManager(List<String> dump) {
+        Objects.requireNonNull(dump, "CSV данные не могут быть null");
+        loadFromCSV(dump);
+    }
+
+    private void initializeTestData() {
+        for (int i = 1; i <= 5; i++) {
+            insert(i, new Ticket());
+        }
+    }
+
+    private void loadFromCSV(List<String> dump) {
         for (int i = 1; i < dump.size(); i++) {
             String line = dump.get(i);
-            insert(i, Ticket.fromCSV(line));
+            if (line != null && !line.trim().isEmpty()) {
+                insert(i, Ticket.fromCSV(line));
+            }
         }
     }
 
-    public Integer getSize() {
-        return storage.size();
+    /**
+     * Возвращает количество билетов в коллекции.
+     *
+     * @return количество билетов
+     */
+    public int size() {
+        return tickets.size();
     }
 
-    public Class<?> getType() {
-        return storage.getClass();
+    /**
+     * Возвращает тип коллекции.
+     *
+     * @return класс коллекции
+     */
+    public Class<?> getCollectionType() {
+        return tickets.getClass();
     }
 
+    /**
+     * Добавляет билет в коллекцию.
+     *
+     * @param id идентификатор билета
+     * @param ticket билет для добавления
+     * @throws IllegalArgumentException если ticket равен null
+     */
     public void insert(int id, Ticket ticket) {
-        storage.put(id, ticket);
+        tickets.put(id, Objects.requireNonNull(ticket, "Билет не может быть null"));
     }
 
+    /**
+     * Удаляет билет по идентификатору.
+     *
+     * @param id идентификатор билета
+     */
     public void remove(int id) {
-        storage.remove(id);
+        tickets.remove(id);
     }
 
-    public void update(int id, Ticket ticket) {
-        storage.replace(id, ticket);
-    }
-
-    public void clear() {
-        storage.clear();
-    }
-
-    public List<String> dumpCSV() {
-        List<String> storage_dump = new ArrayList<>();
-        
-        storage_dump.add(Ticket.getFieldNamesAsCsv());
-        for (Map.Entry<Integer, Ticket> entry : storage.entrySet()) {
-            Ticket ticket = entry.getValue();
-            
-            storage_dump.add(ticket.toCSV());
+    /**
+     * Обновляет билет по указанному ID.
+     *
+     * @param id ID билета
+     * @param ticket новые данные билета
+     * @return true если билет был обновлен, false если билет не найден
+     * @throws IllegalArgumentException если ticket равен null
+     */
+    public boolean update(int id, Ticket ticket) {
+        Objects.requireNonNull(ticket, "Билет не может быть null");
+        if (!tickets.containsKey(id)) {
+            return false;
         }
-        return storage_dump;
+        tickets.put(id, ticket);
+        return true;
     }
 
-    public Collection<Ticket> getValues() {
-        //вывести в стандартный поток вывода все элементы коллекции в строковом представлении
-        return storage.values();
+    /**
+     * Очищает коллекцию билетов.
+     */
+    public void clear() {
+        tickets.clear();
     }
 
-    public String getKeyValues() {
-        return storage.entrySet().toString();
+    /**
+     * Преобразует коллекцию в CSV формат.
+     *
+     * @return список строк в CSV формате
+     */
+    public List<String> toCSV() {
+        List<String> result = new ArrayList<>();
+        result.add(Ticket.getCSVHeader());
+        tickets.values().stream()
+            .map(Ticket::toCSV)
+            .forEach(result::add);
+        return result;
     }
 
-    public void removeGreater(Ticket ticket) {
-        // удалить из коллекции все элементы, превышающие заданный
-        storage.entrySet().removeIf(entry -> entry.getValue().compareTo(ticket) > 0);
+    /**
+     * Возвращает все билеты в коллекции.
+     *
+     * @return коллекция билетов
+     */
+    public Collection<Ticket> getAllTickets() {
+        return Collections.unmodifiableCollection(tickets.values());
     }
 
-    public void removeGreaterKey(int key) {
-        //удалить из коллекции все элементы, ключ которых превышает заданный
-        storage.tailMap(key, false).clear();
+    /**
+     * Возвращает строковое представление пар ключ-значение.
+     *
+     * @return строковое представление коллекции
+     */
+    public String getKeyValueString() {
+        return tickets.entrySet().toString();
     }
 
-    public long countByVenue(Venue venue) {
-        //вывести количество элементов, значение поля venue которых равно заданному
-        return storage.values().stream().filter(ticket -> ticket.getVenue().equals(venue)).count();
-    }
-
-    public Collection<Ticket> filterStartsWithame(String substring) {
-        //вывести элементы, значение поля name которых начинается с заданной подстроки
-        return storage.values().stream().filter(ticket -> ticket.getName().startsWith(substring)).toList();
-    }
-
+    /**
+     * Удаляет билеты, превышающие заданный.
+     *
+     * @param ticket билет для сравнения
+     * @throws IllegalArgumentException если ticket равен null
+     */
+    public int removeGreater(Ticket referenceTicket) {
+        Objects.requireNonNull(referenceTicket, "Билет для сравнения не может быть null");
         
-    public Set<Map.Entry<Integer, Ticket>> getEntrySet() {
-        return storage.entrySet();
+        int initialSize = tickets.size();
+        tickets.values().removeIf(ticket -> ticket.compareTo(referenceTicket) > 0);
+        return initialSize - tickets.size();
+    }
+    /**
+     * Удаляет билеты с ключами больше заданного.
+     *
+     * @param key ключ для сравнения
+     */
+    public void removeGreaterKeys(int key) {
+        tickets.tailMap(key, false).clear();
+    }
+
+    /**
+     * Подсчитывает билеты с указанным местом проведения.
+     *
+     * @param venue место проведения
+     * @return количество совпадений
+     * @throws IllegalArgumentException если venue равен null
+     */
+    public long countByVenue(Venue venue) {
+        return tickets.values().stream()
+            .filter(t -> t.getVenue().equals(Objects.requireNonNull(venue, "Место проведения не может быть null")))
+            .count();
+    }
+
+    /**
+     * Фильтрует билеты по началу имени.
+     *
+     * @param prefix префикс имени
+     * @return список подходящих билетов
+     * @throws IllegalArgumentException если prefix равен null или пуст
+     */
+    public Collection<Ticket> filterStartsWithName(String prefix) {
+        Objects.requireNonNull(prefix, "Префикс не может быть null");
+        if (prefix.isEmpty()) {
+            throw new IllegalArgumentException("Префикс не может быть пустым");
+        }
+
+        return tickets.values().stream()
+            .filter(t -> t.getName().startsWith(prefix))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Возвращает множество пар ключ-значение.
+     *
+     * @return множество записей
+     */
+    public Set<Map.Entry<Integer, Ticket>> entrySet() {
+        return Collections.unmodifiableSet(tickets.entrySet());
     }
 }
