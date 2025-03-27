@@ -39,7 +39,12 @@ public class UpdateId extends Command {
         try {
             validateArguments(args);
             int id = parseId(args[0]);
+            if(!ticketManager.checkKeyExist(id)) {
+                terminal.printError(String.format(NOT_FOUND_MSG, id));
+                return;
+            }
             Ticket updatedTicket = getUpdatedTicket(args);
+
             
             if (ticketManager.update(id, updatedTicket)) {
                 terminal.printSuccess(String.format(SUCCESS_MSG, id));

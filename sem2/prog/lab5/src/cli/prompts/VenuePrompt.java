@@ -14,15 +14,26 @@ public class VenuePrompt extends AbstractPrompt<Venue> {
     @Override
     public Venue ask() throws InputCancelledException{
         try {
-            long id = promptFor("venue.id", Long::parseLong, "Ошибка: введите целое число.");
+            // long id = promptFor("venue.id", Long::parseLong, "Ошибка: введите целое число.");
             String name = promptFor("venue.name", input -> {
                 if (input.isEmpty()) throw new IllegalArgumentException();
                 return input;
             }, "Ошибка: имя не может быть пустым.");
-            int capacity = promptFor("venue.capacity", Integer::parseInt, "Ошибка: введите целое число больше 0.");
-            VenueType type = promptFor("venue.type(BAR, THEATRE, MALL)", VenueType::valueOf, "Ошибка: введите корректный тип Venue.");
-
-            return new Venue(id, name, capacity, type);
+            int capacity = promptFor("venue.capacity", input -> {
+                int value = Integer.parseInt(input);
+                if (value <= 0) {
+                    throw new IllegalArgumentException("Вместимость должна быть больше 0");
+                }
+                return value;
+            }, "Ошибка: введите целое число больше 0.");
+            VenueType type = promptFor("venue.type (BAR, THEATRE, MALL)", input -> {
+                try {
+                    return VenueType.valueOf(input.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Допустимые значения: BAR, THEATRE, MALL");
+                }
+            }, "Ошибка: введите корректный тип Venue.");
+            return new Venue(name, capacity, type);
         } catch (NumberFormatException e) {
             terminal.printError("Некорректный формат числа. Пожалуйста, попробуйте снова.");
             return null;

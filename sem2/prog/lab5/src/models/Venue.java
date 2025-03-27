@@ -2,6 +2,7 @@ package models;
 
 import utils.Validatable;
 import utils.ConvertibleToCSV;
+
 import java.util.Objects;
 
 /**
@@ -32,6 +33,13 @@ public class Venue implements Validatable, ConvertibleToCSV {
         this.type = validateType(type);
         
         updateIdCounter(id);
+    }
+
+    /**
+     * Конструктор для создания нового места (автоматически генерирует id и дату создания).
+    */
+    public Venue(String name, int capacity, VenueType type) {
+        this(idCounter++, name, capacity, type);
     }
 
     // Валидаторы полей
@@ -92,6 +100,7 @@ public class Venue implements Validatable, ConvertibleToCSV {
             throw new IllegalArgumentException("Ошибка парсинга CSV строки", e);
         }
     }
+    
 
     /**
      * Преобразует место проведения в CSV строку.

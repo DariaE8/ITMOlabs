@@ -190,6 +190,13 @@ public class TicketManager {
             .collect(Collectors.toList());
     }
 
+    public boolean checkKeyExist(int key){
+        if (!tickets.entrySet().stream().anyMatch(entry -> entry.getKey() == key)) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Возвращает множество пар ключ-значение.
      *

@@ -2,9 +2,16 @@ package cli;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Менеджер для работы с файлами данных.
@@ -13,6 +20,10 @@ import java.util.Objects;
 public class DumpManager {
     private final String filename;
     private final Terminal terminal;
+        private static final Set<PosixFilePermission> RESTRICTED_PERMISSIONS = EnumSet.of(
+            PosixFilePermission.OWNER_READ,
+            PosixFilePermission.OWNER_WRITE
+    );
 
     /**
      * Создает новый экземпляр DumpManager.
@@ -24,6 +35,29 @@ public class DumpManager {
     public DumpManager(String filename, Terminal terminal) {
         this.filename = Objects.requireNonNull(filename, "Имя файла не может быть null");
         this.terminal = Objects.requireNonNull(terminal, "Терминал не может быть null");
+        ensureSecureFilePermissions();
+    }
+
+    /**
+    * Проверяет и устанавливает безопасные права доступа к файлу.
+    */
+    private void ensureSecureFilePermissions() {
+        try {
+            Path filePath = Paths.get(filename);
+            
+            // Создаем файл, если он не существует
+            if (!Files.exists(filePath)) {
+                Files.createFile(filePath);
+                terminal.println("Создан новый файл данных: " + filename);
+            }
+            
+            // Устанавливаем ограниченные права (только владелец может читать/писать)
+            if (Files.getFileAttributeView(filePath, PosixFileAttributeView.class) != null) {
+                Files.setPosixFilePermissions(filePath, RESTRICTED_PERMISSIONS);
+            }
+        } catch (IOException e) {
+            terminal.printError("Ошибка при установке прав доступа к файлу: " + e.getMessage());
+        }
     }
 
     /**

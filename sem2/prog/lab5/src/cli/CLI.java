@@ -1,7 +1,6 @@
 package cli;
 
 import models.TicketManager;
-import java.io.File;
 import java.io.IOException;
 
 import utils.CommandException;
@@ -62,16 +61,16 @@ public class CLI {
 
     private void validateArguments(String[] args) throws IllegalArgumentException {
         if (args.length == 0) {
-            throw new IllegalArgumentException("Не указан файл данных. Использование: java -jar app.jar datafile.json");
+            throw new IllegalArgumentException("Не указан файл данных.");
         }
 
-        File dataFile = new File(args[0]);
-        if (!dataFile.exists()) {
-            throw new IllegalArgumentException("Файл данных '" + args[0] + "' не существует");
-        }
-        if (!dataFile.canRead()) {
-            throw new IllegalArgumentException("Нет прав на чтение файла '" + args[0] + "'");
-        }
+        // File dataFile = new File(args[0]);
+        // if (!dataFile.exists()) {
+        //     throw new IllegalArgumentException("Файл данных '" + args[0] + "' не существует");
+        // }
+        // if (!dataFile.canRead()) {
+        //     throw new IllegalArgumentException("Нет прав на чтение файла '" + args[0] + "'");
+        // }
     }
 
     private void initializeComponents(String filename) throws IOException {

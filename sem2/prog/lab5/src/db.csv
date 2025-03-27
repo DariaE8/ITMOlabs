@@ -1,3 +1,2 @@
 id,name,x,y,creationDate,price,discount,refundable,type,id,name,capacity,type
-4,notops,1.000000,1,2025-03-27,100,20.0,false,VIP,89,"notops-bar",100,BAR
-5,notops,1.000000,1,2025-03-27,100,20.0,true,VIP,89,"notops-bar",100,BAR
+1,drysua,10.000000,-10,2025-03-27,100,20.0,true,VIP,1,"dry-bar",100,BAR

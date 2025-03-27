@@ -5,8 +5,7 @@ notops
 100
 20
 true
-VIP
-89
+VIPvip
 notops-bar
 100
 BAR
