@@ -97,7 +97,8 @@ public class CommandManager {
      * @return очередь с историей команд (новые команды в конце)
      */
     public Queue<String> getHistory() {
-        return new LinkedList<>(commandHistory);
+        // return new LinkedList<>(commandHistory);
+        return commandHistory;
     }
 
     private void registerCoreCommands(Terminal terminal, TicketManager ticketManager) {

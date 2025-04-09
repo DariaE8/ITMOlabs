@@ -1,2 +1,3 @@
 id,name,x,y,creationDate,price,discount,refundable,type,id,name,capacity,type
-1,drysua,10.000000,-10,2025-03-27,100,20.0,true,VIP,1,"dry-bar",100,BAR
+1,drysua,10.000000,-10,2025-03-27,100,20.0,true,VIP,1,""dry-bar"",100,BAR
+2,drysua,12.000000,13,2025-04-09,80,20.0,true,VIP,2,"bard",100,BAR

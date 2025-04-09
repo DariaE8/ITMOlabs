@@ -35,9 +35,21 @@ public abstract class AbstractPrompt<T> {
                 return parser.apply(line);
                 
             } catch (NumberFormatException e) {
-                terminal.printError(errorMessage);
+                if (terminal.checkScanner()) {
+                    terminal.printError(errorMessage);
+                } else {
+                    // throw new InputCancelledException(e.getMessage());
+                    // throw new NumberFormatException(errorMessage);
+                    throw new InputCancelledException(errorMessage, e);
+                }
             } catch (IllegalArgumentException e) {
-                terminal.printError(e.getMessage());
+                if (terminal.checkScanner()) {
+                    terminal.printError(e.getMessage());
+                } else {
+                    // throw new InputCancelledException(e.getMessage());
+                    // throw new IllegalArgumentException(errorMessage);
+                    throw new InputCancelledException(errorMessage, e);
+                }
             } catch (Exception e) {
                 terminal.printError("Произошла непредвиденная ошибка: " + e.getMessage());
                 throw new InputCancelledException("Ошибка ввода", e);

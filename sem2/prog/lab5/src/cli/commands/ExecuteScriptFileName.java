@@ -101,13 +101,13 @@ public class ExecuteScriptFileName extends Command {
                     commandManager.executeCommand(cmd, args);
                 } catch (CommandException e) {
                     // Прерываем выполнение скрипта при первой же ошибке
-                    throw new ScriptExecutionException("Ошибка выполнения команды '" + cmd + "': " + e.getMessage());
+                    throw new ScriptExecutionException(e.getMessage());
                 }
             }
         } catch (FileNotFoundException e) {
             throw new ScriptExecutionException("Файл скрипта не найден: " + filename);
         } catch (Exception e) {
-            throw new ScriptExecutionException("Ошибка выполнения скрипта: " + e.getMessage());
+            throw new ScriptExecutionException(e.getMessage());
         } finally {
             cleanUpAfterExecution(filename);
         }

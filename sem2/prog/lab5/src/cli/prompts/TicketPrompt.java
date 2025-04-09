@@ -35,7 +35,7 @@ public class TicketPrompt extends AbstractPrompt<Ticket>{
                     throw new IllegalArgumentException("Цена должна быть больше 0");
                 }
                 return value;
-            }, "Ошибка: введите целое число больше 0");
+            }, "Цена должна быть больше 0");
             // terminal.println(price);
             double discount = promptFor("Введите скидку", input -> {
                 double value = Double.parseDouble(input);
@@ -43,14 +43,14 @@ public class TicketPrompt extends AbstractPrompt<Ticket>{
                     throw new IllegalArgumentException("Скидка должна быть в диапазоне от 0 до 100");
                 }
                 return value;
-            }, "Ошибка: введите число от 0 до 100");
+            }, "Скидка должна быть в диапазоне от 0 до 100");
             // terminal.println(discount);
             boolean refundable = promptFor("Можно вернуть? (true/false)", input -> {
                 if (!input.equalsIgnoreCase("true") && !input.equalsIgnoreCase("false")) {
                     throw new IllegalArgumentException("Введите true или false");
                 }
                 return Boolean.parseBoolean(input);
-            }, "Ошибка: введите true или false");
+            }, "Введите true или false");
             // terminal.println(refundable);
             TicketType type = promptFor("Тип билета (VIP, USUAL, BUDGETARY)", input -> {
                 try {
@@ -73,8 +73,12 @@ public class TicketPrompt extends AbstractPrompt<Ticket>{
             terminal.printError("Ошибка в данных: " + e.getMessage());
             return null;
         } catch (Exception e) {
-            terminal.printError("Произошла непредвиденная ошибка: " + e.getMessage());
-            return null; // Выход из метода при критической ошибке
+            if (terminal.checkScanner()) {
+                terminal.printError("Произошла непредвиденная ошибка: " + e.getMessage());
+                return null;
+            } else {                
+                throw new InputCancelledException(e.getMessage());
+            }
         }
     }
     

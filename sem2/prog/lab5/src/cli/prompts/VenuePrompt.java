@@ -12,7 +12,7 @@ public class VenuePrompt extends AbstractPrompt<Venue> {
     }
 
     @Override
-    public Venue ask() throws InputCancelledException{
+    public Venue ask() throws InputCancelledException {
         try {
             // long id = promptFor("venue.id", Long::parseLong, "Ошибка: введите целое число.");
             String name = promptFor("venue.name", input -> {
@@ -25,7 +25,7 @@ public class VenuePrompt extends AbstractPrompt<Venue> {
                     throw new IllegalArgumentException("Вместимость должна быть больше 0");
                 }
                 return value;
-            }, "Ошибка: введите целое число больше 0.");
+            }, "Вместимость должна быть больше 0");
             VenueType type = promptFor("venue.type (BAR, THEATRE, MALL)", input -> {
                 try {
                     return VenueType.valueOf(input.toUpperCase());
@@ -41,8 +41,12 @@ public class VenuePrompt extends AbstractPrompt<Venue> {
             terminal.printError("Ошибка в данных: " + e.getMessage());
             return null;
         } catch (Exception e) {
-            terminal.printError("Произошла непредвиденная ошибка: " + e.getMessage());
-            return null; // Выход из метода при критической ошибке
+            if (terminal.checkScanner()) {
+                terminal.printError("Произошла непредвиденная ошибка: " + e.getMessage());
+                return null;
+            } else {                
+                throw new InputCancelledException(e.getMessage());
+            }
         }
     }
 }

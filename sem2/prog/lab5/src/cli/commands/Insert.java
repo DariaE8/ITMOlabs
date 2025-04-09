@@ -6,6 +6,8 @@ import utils.AbstractPrompt;
 import models.Ticket;
 import models.TicketManager;
 import utils.Command;
+import utils.CommandException;
+
 import java.util.Objects;
 
 /**
@@ -33,7 +35,7 @@ public class Insert extends Command {
      * Выполняет добавление нового билета в коллекцию.
      */
     @Override
-    public void execute(String[] args) {
+    public void execute(String[] args) throws CommandException{
         try {
             validateArguments(args);
             int key = parseKey(args[0]);
@@ -45,9 +47,13 @@ public class Insert extends Command {
                 key, ticketManager.size()));
                 
         } catch (AbstractPrompt.InputCancelledException e) {
-            terminal.printWarning(CANCELLED_MESSAGE);
+            if(terminal.checkScanner()) {
+                terminal.printWarning(CANCELLED_MESSAGE);
+            } else {
+                throw new CommandException(e.getMessage());
+            }
         } catch (IllegalArgumentException e) {
-            terminal.printError("Ошибка: " + e.getMessage());
+            terminal.printError(e.getMessage());
         } catch (Exception e) {
             terminal.printError("Системная ошибка: " + e.getMessage());
         }
@@ -70,7 +76,9 @@ public class Insert extends Command {
     }
 
     private Ticket createNewTicket() throws AbstractPrompt.InputCancelledException {
-        terminal.println("\nСоздание нового билета (введите 'отмена' для отмены):");
+        if (terminal.checkScanner()){
+            terminal.println("\nСоздание нового билета (введите 'отмена' для отмены):");
+        }
         TicketPrompt ticketPrompt = new TicketPrompt(terminal);
         return ticketPrompt.ask();
     }

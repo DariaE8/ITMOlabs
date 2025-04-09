@@ -6,6 +6,8 @@ import utils.AbstractPrompt;
 import models.Ticket;
 import models.TicketManager;
 import utils.Command;
+import utils.CommandException;
+
 import java.util.Objects;
 
 /**
@@ -33,9 +35,10 @@ public class UpdateId extends Command {
 
     /**
      * Выполняет обновление билета по ID.
+     * @throws CommandException 
      */
     @Override
-    public void execute(String[] args) {
+    public void execute(String[] args) throws CommandException {
         try {
             validateArguments(args);
             int id = parseId(args[0]);
@@ -51,8 +54,13 @@ public class UpdateId extends Command {
             } else {
                 terminal.printError(String.format(NOT_FOUND_MSG, id));
             }
+
         } catch (AbstractPrompt.InputCancelledException e) {
-            terminal.printWarning(CANCELLED_MSG);
+            if(terminal.checkScanner()) {
+                terminal.printWarning(CANCELLED_MSG);
+            } else {
+                throw new CommandException(e.getMessage());
+            }
         } catch (IllegalArgumentException e) {
             terminal.printError(e.getMessage());
         } catch (Exception e) {
@@ -88,8 +96,9 @@ public class UpdateId extends Command {
                 terminal.printWarning("Некорректные аргументы, перехожу в интерактивный режим...");
             }
         }
-        
-        terminal.println(INPUT_PROMPT);
+        if (terminal.checkScanner()){
+            terminal.println(INPUT_PROMPT);
+        } 
         TicketPrompt prompt = new TicketPrompt(terminal);
         return prompt.ask();
     }

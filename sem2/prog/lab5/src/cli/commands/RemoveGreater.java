@@ -6,6 +6,8 @@ import utils.AbstractPrompt;
 import models.Ticket;
 import models.TicketManager;
 import utils.Command;
+import utils.CommandException;
+
 import java.util.Objects;
 
 /**
@@ -32,9 +34,10 @@ public class RemoveGreater extends Command {
 
     /**
      * Выполняет удаление элементов, превышающих заданный.
+     * @throws CommandException 
      */
     @Override
-    public void execute(String[] args) {
+    public void execute(String[] args) throws CommandException {
         try {
             Ticket referenceTicket = getReferenceTicket(args);
             
@@ -48,7 +51,11 @@ public class RemoveGreater extends Command {
             }
                 
         } catch (AbstractPrompt.InputCancelledException e) {
-            terminal.printWarning(CANCELLED_MSG);
+            if(terminal.checkScanner()) {
+                terminal.printWarning(CANCELLED_MSG);
+            } else {
+                throw new CommandException(e.getMessage());
+            }
         } catch (IllegalArgumentException e) {
             terminal.printError("Ошибка: " + e.getMessage());
         } catch (Exception e) {
@@ -67,8 +74,9 @@ public class RemoveGreater extends Command {
                 terminal.printWarning("Некорректные аргументы, перехожу в интерактивный режим...");
             }
         }
-        
-        terminal.println(INPUT_PROMPT);
+        if (terminal.checkScanner()){
+            terminal.println(INPUT_PROMPT);
+        }
         TicketPrompt ticketPrompt = new TicketPrompt(terminal);
         return ticketPrompt.ask();
     }
