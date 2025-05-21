@@ -1,0 +1,2 @@
+id,name,x,y,creationDate,price,discount,refundable,type,id,name,capacity,type
+1,Default Ticket,0.000000,0,2025-05-21,100,10.0,true,VIP,1,"Default Venue",100,BAR

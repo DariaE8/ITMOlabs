@@ -15,7 +15,7 @@ import java.util.Arrays;
  */
 public class Ticket extends Element implements Serializable, ConvertibleToCSV {
     private static long idCounter = 1;
-    private final long id; // > 0, уникальное
+    private long id; // > 0, уникальное
     private final String name; // не null, не пустое
     private final Coordinates coordinates; // не null
     private final LocalDate creationDate; // не null, генерируется автоматически
@@ -23,7 +23,7 @@ public class Ticket extends Element implements Serializable, ConvertibleToCSV {
     private final Double discount; // не null, > 0, <= 100
     private final Boolean refundable; // может быть null
     private final TicketType type; // не null
-    private final Venue venue; // не null
+    private Venue venue; // не null
 
     /**
      * Основной конструктор билета.
@@ -190,6 +190,17 @@ public class Ticket extends Element implements Serializable, ConvertibleToCSV {
         if (id >= idCounter) {
             idCounter = id + 1;
         }
+    }
+
+    public void updateId() {
+        this.id = idCounter;
+        this.venue.updateId();
+        idCounter++;
+    }
+
+    public static void resetIdCounter() {
+        idCounter = 1;
+        Venue.resetIdCounter();
     }
 
     /**
