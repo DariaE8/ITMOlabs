@@ -122,6 +122,7 @@ public class MainController {
                             objectCanvas.addTicketAnimated(ticket);
                             ticketTable.refresh();
                             errorLabel.setText("Билет успешно добавлен");
+                            ticketTable.setEditable(false);
                         } catch (Exception ex) {
                             errorLabel.setText("Ошибка при добавлении: " + ex.getMessage());
                         }
@@ -435,7 +436,7 @@ public class MainController {
         ticketTable.getFocusModel().focus(newIndex, nameColumn);
         ticketTable.edit(newIndex, nameColumn);
         errorLabel.setText("");
-        ticketTable.setEditable(false);
+        // ticketTable.setEditable(false);
     }
 
     private void handleEdit() {
