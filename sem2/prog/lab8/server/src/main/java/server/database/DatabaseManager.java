@@ -5,14 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseManager {
-    // private static final String DB_URL = "jdbc:postgresql://localhost:5432/labs";
-    // private static final String DB_USER = "drysua";
-    // private static final String DB_PASSWORD = "cdvfbgnh";
-    private static final String DB_URL = "jdbc:postgresql://localhost:7777/studs?currentSchema=s471917";
-    private static final String DB_USER = "s471917";
-    private static final String DB_PASSWORD = "dbqwWAa64Wc9rLfN";
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/labs";
+    private static final String DB_USER = "drysua";
+    private static final String DB_PASSWORD = "cdvfbgnh";
     
-
     private static Connection connection;
 
     public static Connection getConnection() {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.gui.controllers.ObjectEditController"
+            prefWidth="300" prefHeight="200">
+
+    <VBox spacing="10" padding="10">
+        <Label text="Редактирование билета"/>
+        <TextField fx:id="nameField" promptText="Название"/>
+        <TextField fx:id="xField" promptText="Координата X"/>
+        <TextField fx:id="yField" promptText="Координата Y"/>
+        <HBox spacing="10">
+            <Button fx:id="saveButton" text="Сохранить" onAction="#onSave"/>
+            <Button text="Отмена" onAction="#onCancel"/>
+        </HBox>
+    </VBox>
+</AnchorPane>

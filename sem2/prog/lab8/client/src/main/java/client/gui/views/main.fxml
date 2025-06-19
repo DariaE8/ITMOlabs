@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.gui.controllers.MainController">
+        <top>
+        <VBox spacing="5">
+            <HBox spacing="10">
+                <padding>
+                    <Insets top="10" right="10" bottom="0" left="10"/>
+                </padding>
+                <Label fx:id="usernameLabel" text="Пользователь: ..." />
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="errorLabel" textFill="red"/>
+            </HBox>
+            <HBox spacing="10">
+                <padding>
+                    <Insets top="0" right="10" bottom="10" left="10"/>
+                </padding>
+                <Button fx:id="logoutButton" text="Выход" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- Центральная часть: таблица и визуализация -->
+    <center>
+    <SplitPane orientation="VERTICAL">
+    <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+
+            <!-- Фильтр -->
+            <TextField fx:id="filterField" promptText="Фильтр по имени..." />
+
+            <!-- Таблица -->
+            <TableView fx:id="ticketTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idColumn" text="ID"/>
+                    <TableColumn fx:id="nameColumn" text="Название"/>
+                    <TableColumn fx:id="xColumn" text="X"/>
+                    <TableColumn fx:id="yColumn" text="Y"/>
+                    <TableColumn fx:id="creationDateColumn" text="Создано"/>
+                    <TableColumn fx:id="priceColumn" text="Цена"/>
+                    <TableColumn fx:id="discountColumn" text="Скидка"/>
+                    <TableColumn fx:id="refundableColumn" text="Возврат?"/>
+                    <TableColumn fx:id="typeColumn" text="Тип"/>
+                    <TableColumn fx:id="venueIdColumn" text="ID"/>
+                    <TableColumn fx:id="venueNameColumn" text="Название"/>
+                    <TableColumn fx:id="venueCapacityColumn" text="Вместимость"/>
+                    <TableColumn fx:id="venueTypeColumn" text="Тип"/>
+                    <TableColumn fx:id="actionColumn" prefWidth="40" text=""/>
+                    <TableColumn fx:id="cancelColumn" prefWidth="40" text=""/>
+                    <TableColumn fx:id="trashColumn" prefWidth="50" text=""/>
+                </columns>
+            </TableView>
+            <HBox spacing="10">
+            <Button fx:id="addButton" text="Добавить"/>
+            <Button fx:id="editButton" text="Изменить"/>
+            <Button fx:id="deleteButton" text="Удалить"/>
+        </HBox>
+    </VBox>
+
+    <HBox spacing="10">
+        <Canvas fx:id="canvas" width="800" height="400" />
+        <VBox spacing="10">
+            <Label text="Информация о билете:" />
+            <TextArea fx:id="ticketInfoArea" editable="false" wrapText="true" prefWidth="200"/>
+        </VBox>
+    </HBox>
+    </SplitPane>
+</center>
+</BorderPane>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="client.gui.controllers.LoginController"
+      spacing="10" alignment="CENTER" prefWidth="500" prefHeight="500">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Авторизация" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <TextField fx:id="usernameField" promptText="Логин" maxWidth="200"/>
+
+    <PasswordField fx:id="passwordField" promptText="Пароль" maxWidth="200"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="loginButton" text="Войти" onAction="#onLoginClicked" />
+        <Button fx:id="registerButton" text="Регистрация" onAction="#onRegisterClicked" />
+    </HBox>
+
+    <Label fx:id="messageLabel" textFill="red" />
+
+</VBox>
